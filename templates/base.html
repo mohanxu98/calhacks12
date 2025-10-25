@@ -76,8 +76,8 @@
     {% endif %}
     
     <!-- CSS -->
-    {% block css %}{% endblock %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block css %}{% endblock %}
 </head>
 <body>
     {% block content %}{% endblock %}
