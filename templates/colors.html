@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Variation - CalHacks12</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+</head>
+<body>
+    <nav class="theme-nav">
+        <a href="{{ url_for('home') }}">Original</a>
+        <a href="{{ url_for('colors') }}" class="active">Colors</a>
+        <a href="{{ url_for('sizes') }}">Sizes</a>
+        <a href="{{ url_for('spacing') }}">Spacing</a>
+        <a href="{{ url_for('typography') }}">Typography</a>
+    </nav>
+    
+    <div class="container">
+        <h1>Welcome to CalHacks12</h1>
+        <p>A simple and elegant full-stack application built with Flask and HTML.</p>
+        <a href="#" class="button">Get Started</a>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🚀</div>
+                <h3>Fast</h3>
+                <p>Built with performance in mind</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💎</div>
+                <h3>Simple</h3>
+                <p>Clean and intuitive design</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure</h3>
+                <p>Your data is safe with us</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
