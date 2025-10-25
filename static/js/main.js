@@ -27,17 +27,61 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Enhanced button click tracking
+    // Enhanced button click tracking with detailed engagement metrics
     const button = document.querySelector('.button');
     if (button) {
+        let buttonHoverStart = null;
+        let buttonHoverDuration = 0;
+        
+        // Track button hover start
+        button.addEventListener('mouseenter', function() {
+            buttonHoverStart = Date.now();
+            trackGA4Event('button_hover_start', {
+                event_category: 'engagement',
+                event_label: 'get_started_button',
+                button_type: 'cta',
+                page_variant: window.pageVariant || 'unknown'
+            });
+        });
+        
+        // Track button hover end and duration
+        button.addEventListener('mouseleave', function() {
+            if (buttonHoverStart) {
+                buttonHoverDuration = Date.now() - buttonHoverStart;
+                trackGA4Event('button_hover_end', {
+                    event_category: 'engagement',
+                    event_label: 'get_started_button',
+                    button_type: 'cta',
+                    hover_duration: Math.round(buttonHoverDuration),
+                    page_variant: window.pageVariant || 'unknown'
+                });
+            }
+        });
+        
+        // Track button click with detailed metrics
         button.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Track button click
+            // Calculate total engagement time (hover + click)
+            const totalEngagement = buttonHoverDuration + (Date.now() - (buttonHoverStart || Date.now()));
+            
+            // Track comprehensive button click
             trackGA4Event('cta_click', {
                 event_category: 'engagement',
                 event_label: 'get_started_button',
+                button_type: 'cta',
+                hover_duration: Math.round(buttonHoverDuration),
+                total_engagement: Math.round(totalEngagement),
+                page_variant: window.pageVariant || 'unknown',
                 value: 1
+            });
+            
+            // Track button interaction success
+            trackGA4Event('button_interaction_success', {
+                event_category: 'conversion',
+                event_label: 'get_started_button',
+                button_type: 'cta',
+                page_variant: window.pageVariant || 'unknown'
             });
             
             // Add a simple animation effect
@@ -51,43 +95,126 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Enhanced feature interaction tracking
+    // Enhanced feature button tracking with detailed engagement metrics
     const features = document.querySelectorAll('.feature');
     features.forEach((feature, index) => {
+        let featureHoverStart = null;
+        let featureHoverDuration = 0;
+        const featureTitle = feature.querySelector('h3')?.textContent || `Feature ${index + 1}`;
+        
         feature.addEventListener('mouseenter', function() {
+            featureHoverStart = Date.now();
             this.style.transform = 'translateY(-5px)';
             this.style.transition = 'transform 0.3s ease';
             
-            // Track feature hover
-            trackGA4Event('feature_hover', {
+            // Track feature hover start
+            trackGA4Event('feature_hover_start', {
                 event_category: 'engagement',
                 event_label: `feature_${index + 1}`,
-                value: 1
+                feature_title: featureTitle,
+                feature_type: 'card',
+                page_variant: window.pageVariant || 'unknown'
             });
         });
         
         feature.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
+            if (featureHoverStart) {
+                featureHoverDuration = Date.now() - featureHoverStart;
+                this.style.transform = 'translateY(0)';
+                
+                // Track feature hover end with duration
+                trackGA4Event('feature_hover_end', {
+                    event_category: 'engagement',
+                    event_label: `feature_${index + 1}`,
+                    feature_title: featureTitle,
+                    feature_type: 'card',
+                    hover_duration: Math.round(featureHoverDuration),
+                    page_variant: window.pageVariant || 'unknown'
+                });
+            }
         });
 
-        // Track feature clicks
+        // Track feature clicks with comprehensive metrics
         feature.addEventListener('click', function() {
+            const totalEngagement = featureHoverDuration + (Date.now() - (featureHoverStart || Date.now()));
+            
             trackGA4Event('feature_click', {
                 event_category: 'engagement',
                 event_label: `feature_${index + 1}`,
+                feature_title: featureTitle,
+                feature_type: 'card',
+                hover_duration: Math.round(featureHoverDuration),
+                total_engagement: Math.round(totalEngagement),
+                page_variant: window.pageVariant || 'unknown',
                 value: 1
+            });
+            
+            // Track feature interaction success
+            trackGA4Event('feature_interaction_success', {
+                event_category: 'engagement',
+                event_label: `feature_${index + 1}`,
+                feature_title: featureTitle,
+                feature_type: 'card',
+                page_variant: window.pageVariant || 'unknown'
             });
         });
     });
 
-    // Navigation tracking
+    // Enhanced navigation button tracking with engagement metrics
     const navLinks = document.querySelectorAll('.theme-nav a');
-    navLinks.forEach(link => {
+    navLinks.forEach((link, index) => {
+        let navHoverStart = null;
+        let navHoverDuration = 0;
+        
+        // Track navigation hover start
+        link.addEventListener('mouseenter', function() {
+            navHoverStart = Date.now();
+            trackGA4Event('nav_hover_start', {
+                event_category: 'navigation',
+                event_label: this.textContent.trim(),
+                nav_item: `nav_${index + 1}`,
+                nav_text: this.textContent.trim(),
+                page_variant: window.pageVariant || 'unknown'
+            });
+        });
+        
+        // Track navigation hover end and duration
+        link.addEventListener('mouseleave', function() {
+            if (navHoverStart) {
+                navHoverDuration = Date.now() - navHoverStart;
+                trackGA4Event('nav_hover_end', {
+                    event_category: 'navigation',
+                    event_label: this.textContent.trim(),
+                    nav_item: `nav_${index + 1}`,
+                    nav_text: this.textContent.trim(),
+                    hover_duration: Math.round(navHoverDuration),
+                    page_variant: window.pageVariant || 'unknown'
+                });
+            }
+        });
+        
+        // Track navigation click with detailed metrics
         link.addEventListener('click', function() {
+            const totalEngagement = navHoverDuration + (Date.now() - (navHoverStart || Date.now()));
+            
             trackGA4Event('navigation_click', {
                 event_category: 'navigation',
                 event_label: this.textContent.trim(),
+                nav_item: `nav_${index + 1}`,
+                nav_text: this.textContent.trim(),
+                hover_duration: Math.round(navHoverDuration),
+                total_engagement: Math.round(totalEngagement),
+                page_variant: window.pageVariant || 'unknown',
                 value: 1
+            });
+            
+            // Track navigation success
+            trackGA4Event('navigation_success', {
+                event_category: 'navigation',
+                event_label: this.textContent.trim(),
+                nav_item: `nav_${index + 1}`,
+                nav_text: this.textContent.trim(),
+                page_variant: window.pageVariant || 'unknown'
             });
         });
     });
