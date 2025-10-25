@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-10-25T16:49:06.049502",
+  "best_performing_button": "cta on original",
+  "worst_performing_button": "cta on original",
+  "most_engaging_variant": "original",
+  "recommendations": [
+    "\u26a0\ufe0f cta button on original needs improvement",
+    "\ud83c\udfaf Focus on improving button visibility and call-to-action clarity"
+  ],
+  "performance_summary": {
+    "total_buttons_analyzed": 2,
+    "average_engagement_score": 0.03,
+    "best_engagement_score": 0.03,
+    "worst_engagement_score": 0.03,
+    "most_clicked_button": "cta_original",
+    "highest_ctr_button": "cta_original"
+  }
+}

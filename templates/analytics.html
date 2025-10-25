@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Button Analytics Dashboard - CalHacks12{% endblock %}
+
+{% block content %}
+<script>
+    // Set page variant for GA4 tracking
+    window.pageVariant = '{{ page_variant }}';
+</script>
+
+<nav class="theme-nav">
+    <a href="{{ url_for('home') }}">Original</a>
+    <a href="{{ url_for('colors') }}">Colors</a>
+    <a href="{{ url_for('sizes') }}">Sizes</a>
+    <a href="{{ url_for('spacing') }}">Spacing</a>
+    <a href="{{ url_for('typography') }}">Typography</a>
+    <a href="{{ url_for('analytics_dashboard') }}" class="active">Analytics</a>
+</nav>
+
+<div class="container">
+    <h1>🎯 Button Analytics Dashboard</h1>
+    <p>Analyze button performance and get insights from your GA4 data</p>
+    
+    <div class="analytics-controls">
+        <button id="run-analysis" class="button">Run Button Analysis</button>
+        <button id="refresh-insights" class="button">Refresh Insights</button>
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <span>Analyzing button data...</span>
+        </div>
+    </div>
+    
+    <div class="insights-container" id="insights-container">
+        <div class="insights-placeholder">
+            <h3>📊 No insights available yet</h3>
+            <p>Click "Run Button Analysis" to generate insights from your GA4 data</p>
+        </div>
+    </div>
+    
+    <div class="workflow-info">
+        <h3>🔄 Temporal Workflow Process</h3>
+        <div class="workflow-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Fetch GA4 Data</h4>
+                    <p>Retrieve button interaction events from Google Analytics</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Process Metrics</h4>
+                    <p>Calculate engagement scores, click-through rates, and hover durations</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Generate Insights</h4>
+                    <p>Identify best/worst performing buttons and create recommendations</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Save & Notify</h4>
+                    <p>Store insights and send notifications about findings</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.analytics-controls {
+    margin: 2rem 0;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.insights-container {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.insights-placeholder {
+    text-align: center;
+    color: #666;
+}
+
+.insight-card {
+    background: white;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.insight-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.insight-card p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.workflow-info {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.workflow-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: #3498db;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.step-content h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.step-content p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const runAnalysisBtn = document.getElementById('run-analysis');
+    const refreshBtn = document.getElementById('refresh-insights');
+    const loading = document.getElementById('loading');
+    const insightsContainer = document.getElementById('insights-container');
+    
+    // Run analysis
+    runAnalysisBtn.addEventListener('click', async function() {
+        loading.style.display = 'flex';
+        runAnalysisBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/analyze-buttons', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ days_back: 7 })
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                alert('✅ Analysis started! Check back in a few minutes for results.');
+                // Auto-refresh insights after a delay
+                setTimeout(loadInsights, 30000);
+            } else {
+                alert('❌ Failed to start analysis: ' + result.message);
+            }
+        } catch (error) {
+            alert('❌ Error: ' + error.message);
+        } finally {
+            loading.style.display = 'none';
+            runAnalysisBtn.disabled = false;
+        }
+    });
+    
+    // Refresh insights
+    refreshBtn.addEventListener('click', loadInsights);
+    
+    // Load insights function
+    async function loadInsights() {
+        try {
+            const response = await fetch('/api/button-insights');
+            const insights = await response.json();
+            
+            if (response.ok) {
+                displayInsights(insights);
+            } else {
+                insightsContainer.innerHTML = `
+                    <div class="insights-placeholder">
+                        <h3>📊 No insights available yet</h3>
+                        <p>${insights.message}</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading insights:', error);
+        }
+    }
+    
+    // Display insights
+    function displayInsights(insights) {
+        const html = `
+            <div class="insight-card">
+                <h4>🏆 Best Performing Button</h4>
+                <p><strong>${insights.best_performing_button}</strong></p>
+            </div>
+            
+            <div class="insight-card">
+                <h4>⚠️ Needs Improvement</h4>
+                <p><strong>${insights.worst_performing_button}</strong></p>
+            </div>
+            
+            <div class="insight-card">
+                <h4>🎯 Most Engaging Variant</h4>
+                <p><strong>${insights.most_engaging_variant}</strong></p>
+            </div>
+            
+            <div class="insight-card">
+                <h4>💡 Recommendations</h4>
+                <ul>
+                    ${insights.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>
+            </div>
+            
+            <div class="insight-card">
+                <h4>📈 Performance Summary</h4>
+                <p><strong>Buttons Analyzed:</strong> ${insights.performance_summary.total_buttons_analyzed}</p>
+                <p><strong>Average Engagement Score:</strong> ${insights.performance_summary.average_engagement_score?.toFixed(2) || 'N/A'}</p>
+                <p><strong>Most Clicked Button:</strong> ${insights.performance_summary.most_clicked_button}</p>
+            </div>
+        `;
+        
+        insightsContainer.innerHTML = html;
+    }
+    
+    // Load insights on page load
+    loadInsights();
+});
+</script>
+{% endblock %}
