@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CalHacks12{% endblock %}</title>
+    
+    <!-- Google Analytics 4 -->
+    {% if ga4_measurement_id %}
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga4_measurement_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ ga4_measurement_id }}', {
+            // Enhanced measurement settings
+            send_page_view: true,
+            // Performance monitoring
+            custom_map: {
+                'custom_parameter_1': 'page_variant',
+                'custom_parameter_2': 'load_time'
+            }
+        });
+        
+        // Performance monitoring
+        window.addEventListener('load', function() {
+            // Track Core Web Vitals
+            if ('web-vital' in window) {
+                // This would be loaded from a CDN or npm package
+                // For now, we'll implement basic performance tracking
+                const loadTime = performance.now();
+                gtag('event', 'page_load_time', {
+                    'value': Math.round(loadTime),
+                    'page_variant': '{{ page_variant }}'
+                });
+            }
+            
+            // Track page load performance
+            const navigation = performance.getEntriesByType('navigation')[0];
+            if (navigation) {
+                gtag('event', 'page_performance', {
+                    'page_load_time': Math.round(navigation.loadEventEnd - navigation.loadEventStart),
+                    'dom_content_loaded': Math.round(navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart),
+                    'page_variant': '{{ page_variant }}'
+                });
+            }
+        });
+        
+        // Track user interactions
+        document.addEventListener('click', function(event) {
+            const target = event.target;
+            if (target.matches('.button, .theme-nav a, .feature')) {
+                gtag('event', 'click', {
+                    'event_category': 'engagement',
+                    'event_label': target.textContent.trim() || target.className,
+                    'page_variant': '{{ page_variant }}'
+                });
+            }
+        });
+        
+        // Track scroll depth
+        let maxScroll = 0;
+        window.addEventListener('scroll', function() {
+            const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+            if (scrollPercent > maxScroll && scrollPercent % 25 === 0) {
+                maxScroll = scrollPercent;
+                gtag('event', 'scroll_depth', {
+                    'event_category': 'engagement',
+                    'value': scrollPercent,
+                    'page_variant': '{{ page_variant }}'
+                });
+            }
+        });
+    </script>
+    {% endif %}
+    
+    <!-- CSS -->
+    {% block css %}{% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% block content %}{% endblock %}
+    
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block js %}{% endblock %}
+</body>
+</html>
